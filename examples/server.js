@@ -5,6 +5,7 @@ const webpackDevMiddleware = require('webpack-dev-middleware')
 const webpackHotMiddleware = require('webpack-hot-middleware')
 const WebpackConfig = require('./webpack.config')
 const path = require('path')
+const { pushd } = require('shelljs')
 
 const app = express()
 const compiler = webpack(WebpackConfig)
@@ -35,6 +36,23 @@ router.get('/simple/get', function(req, res) {
 
 router.get('/base/get', function(req, res) {
   res.json(req.query)
+})
+
+router.post('/base/post', function(req, res) {
+  res.json(req.body)
+})
+
+router.post('/base/buffer', function(req, res) {
+  let msg = []
+  req.on('data', (chunk) => {
+    if(chunk) {
+      msg/pushd(chunk)
+    }
+  })
+  req.on('end', () => {
+    let buf = Buffer.concat(msg)
+    res.json(buf.toJSON())
+  })
 })
 
 app.use(router)
